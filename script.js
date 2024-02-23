@@ -1,67 +1,79 @@
 document.addEventListener('DOMContentLoaded', function () {
   const video = document.getElementById('video');
-  const horizontalLine = document.getElementById('horizontalLine');
   const currentTimeLine = document.getElementById('currentTimeLine');
   const scale = document.getElementById('scale');
+  const timelineContainer = document.getElementById('timelineContainer');
+  const currentTimeDisplay = document.createElement('div');
+  currentTimeDisplay.className = 'currentTimeDisplay';
+  timelineContainer.appendChild(currentTimeDisplay);
 
-  let isDragging = false;
-
-  // Add event listeners for mouse and touch events
-  horizontalLine.addEventListener('mousedown', startDrag);
-  horizontalLine.addEventListener('touchstart', startDrag);
-
-  document.addEventListener('mousemove', drag);
-  document.addEventListener('touchmove', drag);
-
-  document.addEventListener('mouseup', stopDrag);
-  document.addEventListener('touchend', stopDrag);
-
-  function startDrag(e) {
-    isDragging = true;
-  }
-
-  function drag(e) {
-    if (!isDragging) return;
-
-    const rect = scale.getBoundingClientRect();
-    let mouseX;
-
-    if (e.type === 'touchmove') {
-      mouseX = e.touches[0].clientX - rect.left;
-    } else {
-      mouseX = e.clientX - rect.left;
-    }
-
-    const percentage = (mouseX / rect.width) * 100;
-    const time = (percentage / 100) * video.duration;
-
-    currentTimeLine.style.left = percentage + '%';
-    video.currentTime = time;
-  }
-
-  function stopDrag() {
-    isDragging = false;
-  }
-
+  // Event listener for updating the timeline while the video is playing
   video.addEventListener('timeupdate', updateTimeline);
-  video.addEventListener('loadedmetadata', updateScale);
 
+  // Event handler to update the timeline position
   function updateTimeline() {
-    const percentage = (video.currentTime / video.duration) * 100;
-    currentTimeLine.style.left = percentage + '%';
+    const duration = video.duration;
+    const currentTime = video.currentTime;
+    const percentage = (currentTime / duration) * 100;
+  
+    // Update the current time display
+    currentTimeDisplay.textContent = formatTime(currentTime);
+    currentTimeDisplay.style.left = `${percentage}%`;
+  
+    // Update the current timeline position
+    currentTimeLine.style.left = `${percentage}%`;
+  
+    // Move the scale container to keep the current time line in view
+    const scaleContainerWidth = timelineContainer.clientWidth;
+    const currentTimeLinePosition = currentTimeLine.offsetLeft;
+    const offset = currentTimeLinePosition - scaleContainerWidth / 2;
+    timelineContainer.scrollLeft = offset;
   }
 
-  function updateScale() {
+  // Initialize the timeline with scale intervals
+  initializeTimeline();
+
+  // Event listener for updating the timeline when video metadata is loaded
+  video.addEventListener('loadedmetadata', function () {
+    initializeTimeline();
+  });
+
+  // Initialize the timeline with scale intervals
+  function initializeTimeline() {
+    const duration = video.duration;
+    const interval = 30; // 30 seconds interval
+    const numIntervals = Math.floor(duration / interval);
+
+    // Clear previous scale elements
     scale.innerHTML = '';
 
-    const duration = video.duration;
-    const interval = 30; // seconds
+    for (let i = 0; i <= numIntervals; i++) {
+      const intervalMarker = document.createElement('div');
+      intervalMarker.className = 'interval-marker';
 
-    for (let i = 0; i <= duration; i += interval) {
-      const scaleSegment = document.createElement('div');
-      scaleSegment.className = 'scaleSegment';
-      scaleSegment.style.width = (interval / duration) * 100 + '%';
-      scale.appendChild(scaleSegment);
+      // Calculate the time for this interval
+      const timeForInterval = i * interval;
+
+      // Set the left position based on the percentage of the duration
+      const leftPosition = (timeForInterval / duration) * 100;
+      intervalMarker.style.left = `${leftPosition}%`;
+
+      // Create label for the interval marker
+      const label = document.createElement('div');
+      label.className = 'interval-label';
+      label.textContent = formatTime(timeForInterval);
+      label.style.left = `${leftPosition}%`;
+
+      // Append interval marker and label to the scale
+      scale.appendChild(intervalMarker);
+      scale.appendChild(label);
     }
+  }
+
+  // Format time in MM:SS format
+  function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
   }
 });

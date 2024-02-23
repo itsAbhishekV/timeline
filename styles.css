@@ -1,6 +1,8 @@
 body {
   font-family: Arial, sans-serif;
   margin: 0;
+  height: 100vh;
+  width: 100vw;
 }
 
 .video-container {
@@ -12,19 +14,14 @@ body {
   height: 85vh;
 }
 
+video::-webkit-media-controls-timeline {display:none;}
+
 .timeline-container {
   position: relative;
-}
-
-.horizontalLine {
-  position: absolute;
-  width: 100%;
-  height: 2px;
-  background-color: rgb(255, 0, 0);
-  top: 50%;
-  left: 0;
-  transform: translateY(-50%);
-  cursor: grab; /* Set cursor to grab to indicate draggable */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 3.5px;
 }
 
 .currentTimeLine {
@@ -49,4 +46,43 @@ body {
 .scaleSegment {
   height: 100%;
   border-left: 1px solid white;
+}
+
+.horizontalLine {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background-color: white;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  cursor: grab;
+  z-index: 0; /* Ensure it's behind the currentTimeLine and interval markers */
+}
+
+/* Update the existing styles for the interval marker */
+.interval-marker {
+  position: absolute;
+  width: 2px;
+  height: 10px;
+  background-color: rgb(255, 255, 255);
+  top: 40%;
+}
+
+/* Update the existing styles for the interval label */
+.interval-label {
+  position: absolute;
+  color: rgb(255, 255, 255);
+  top: 60%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.currentTimeDisplay {
+  position: absolute;
+  top: 10%; /* Adjust the vertical position as needed */
+  transform: translateX(-50%);
+  z-index: 1; /* Ensure it's above the scale and horizontal line */
+  color: white;
+  white-space: nowrap;
 }
