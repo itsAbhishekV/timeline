@@ -1,0 +1,39 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+}
+
+.timeline-container {
+  position: relative;
+  margin-top: 20px; /* Adjust the margin as needed */
+}
+
+#timeline {
+  background-color: #3498db;
+  height: 30px;
+  width: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.main-line {
+  position: absolute;
+  border-left: 2px solid #e74c3c;
+  height: 100%;
+}
+
+.labels {
+  position: absolute;
+  top: 35px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #777;
+}
+
+video {
+  width: 100%; /* Take full width of the parent container */
+}
