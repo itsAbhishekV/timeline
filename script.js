@@ -1,37 +1,67 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const video = document.getElementById('video');
-    const timeline = document.getElementById('timeline');
-    const mainLine = document.querySelector('.main-line');
-    const labelsContainer = document.getElementById('labels');
-  
-    video.addEventListener('timeupdate', updateTimeline);
-  
-    function updateTimeline() {
-      const percentage = (video.currentTime / video.duration) * 100;
-      timeline.style.width = percentage + '%';
-      mainLine.style.left = percentage + '%';
+  const video = document.getElementById('video');
+  const horizontalLine = document.getElementById('horizontalLine');
+  const currentTimeLine = document.getElementById('currentTimeLine');
+  const scale = document.getElementById('scale');
+
+  let isDragging = false;
+
+  // Add event listeners for mouse and touch events
+  horizontalLine.addEventListener('mousedown', startDrag);
+  horizontalLine.addEventListener('touchstart', startDrag);
+
+  document.addEventListener('mousemove', drag);
+  document.addEventListener('touchmove', drag);
+
+  document.addEventListener('mouseup', stopDrag);
+  document.addEventListener('touchend', stopDrag);
+
+  function startDrag(e) {
+    isDragging = true;
+  }
+
+  function drag(e) {
+    if (!isDragging) return;
+
+    const rect = scale.getBoundingClientRect();
+    let mouseX;
+
+    if (e.type === 'touchmove') {
+      mouseX = e.touches[0].clientX - rect.left;
+    } else {
+      mouseX = e.clientX - rect.left;
     }
-  
-    function updateLabels() {
-      labelsContainer.innerHTML = '';
-  
-      const duration = video.duration;
-      const interval = duration > 60 ? 10 : 5; // Adjust label interval based on video duration
-  
-      for (let i = 0; i <= duration; i += interval) {
-        const label = document.createElement('div');
-        label.textContent = formatTime(i);
-        label.style.width = (interval / duration) * 100 + '%';
-        labelsContainer.appendChild(label);
-      }
+
+    const percentage = (mouseX / rect.width) * 100;
+    const time = (percentage / 100) * video.duration;
+
+    currentTimeLine.style.left = percentage + '%';
+    video.currentTime = time;
+  }
+
+  function stopDrag() {
+    isDragging = false;
+  }
+
+  video.addEventListener('timeupdate', updateTimeline);
+  video.addEventListener('loadedmetadata', updateScale);
+
+  function updateTimeline() {
+    const percentage = (video.currentTime / video.duration) * 100;
+    currentTimeLine.style.left = percentage + '%';
+  }
+
+  function updateScale() {
+    scale.innerHTML = '';
+
+    const duration = video.duration;
+    const interval = 30; // seconds
+
+    for (let i = 0; i <= duration; i += interval) {
+      const scaleSegment = document.createElement('div');
+      scaleSegment.className = 'scaleSegment';
+      scaleSegment.style.width = (interval / duration) * 100 + '%';
+      scale.appendChild(scaleSegment);
     }
-  
-    function formatTime(seconds) {
-      const minutes = Math.floor(seconds / 60);
-      const remainingSeconds = Math.floor(seconds % 60);
-      return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
-    }
-  
-    updateLabels();
-  });
-  
+  }
+});
