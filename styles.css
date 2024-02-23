@@ -73,6 +73,7 @@ video::-webkit-media-controls-timeline {display:none;}
 .interval-label {
   position: absolute;
   color: rgb(255, 255, 255);
+  font-size: 14px;
   top: 60%;
   transform: translateX(-50%);
   white-space: nowrap;
@@ -80,9 +81,11 @@ video::-webkit-media-controls-timeline {display:none;}
 
 .currentTimeDisplay {
   position: absolute;
+  left: 90%;
   top: 10%; /* Adjust the vertical position as needed */
   transform: translateX(-50%);
   z-index: 1; /* Ensure it's above the scale and horizontal line */
   color: white;
+  font-weight: 600;
   white-space: nowrap;
 }
