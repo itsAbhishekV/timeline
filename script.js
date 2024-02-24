@@ -7,30 +7,68 @@ document.addEventListener('DOMContentLoaded', function () {
   currentTimeDisplay.className = 'currentTimeDisplay';
   timelineContainer.appendChild(currentTimeDisplay);
 
+  let isDragging = false;
+
   // Event listener for updating the timeline while the video is playing
   video.addEventListener('timeupdate', updateTimeline);
 
-  // Event handler to update the timeline position
   function updateTimeline() {
     const duration = video.duration;
     const currentTime = video.currentTime;
     const percentage = (currentTime / duration) * 100;
-  
+
     // Update the current time display
     currentTimeDisplay.textContent = formatTime(currentTime);
     currentTimeDisplay.style.left = `${percentage}%`;
-  
-    // Update the current timeline position
-    currentTimeLine.style.left = `${percentage}%`;
-  
-    // Move the scale container to keep the current time line in view
-    const scaleContainerWidth = timelineContainer.clientWidth;
-    const currentTimeLinePosition = currentTimeLine.offsetLeft;
-    const offset = currentTimeLinePosition - scaleContainerWidth / 2;
-    timelineContainer.scrollLeft = offset;
+    
+    if (!isDragging) {
+      currentTimeLine.style.left = `${percentage}%`;
+    }
   }
 
-  // Initialize the timeline with scale intervals
+  currentTimeDisplay.addEventListener('mousedown', startDragging);
+
+  document.addEventListener('mouseup', stopDragging);
+
+  document.addEventListener('mousemove', handleDragging);
+
+  // Function to handle the start of dragging
+  function startDragging(event) {
+    isDragging = true;
+    video.pause();
+    event.preventDefault();
+  }
+
+  // Function to handle dragging
+  function handleDragging(event) {
+    if (!isDragging) return;
+
+    const timelineRect = timelineContainer.getBoundingClientRect();
+    const clickX = event.clientX - timelineRect.left;
+    const percentage = (clickX / timelineRect.width) * 100;
+
+    const clampedPercentage = Math.max(0, Math.min(100, percentage));
+
+    // Update the current timeline position
+    currentTimeLine.style.left = `${clampedPercentage}%`;
+
+    // Update the video time based on the dragged position
+    const duration = video.duration;
+    const newTime = (clampedPercentage / 100) * duration;
+    video.currentTime = newTime;
+
+    // Update the current time display
+    currentTimeDisplay.textContent = formatTime(newTime);
+    currentTimeDisplay.style.left = `${clampedPercentage}%`;
+  }
+
+  function stopDragging() {
+    if (isDragging) {
+      isDragging = false;
+      video.play();
+    }
+  }
+
   initializeTimeline();
 
   // Event listener for updating the timeline when video metadata is loaded
@@ -38,39 +76,33 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeTimeline();
   });
 
-  // Initialize the timeline with scale intervals
   function initializeTimeline() {
     const duration = video.duration;
-    const interval = 30; // 30 seconds interval
+    const interval = 30;
     const numIntervals = Math.floor(duration / interval);
 
-    // Clear previous scale elements
     scale.innerHTML = '';
 
     for (let i = 0; i <= numIntervals; i++) {
       const intervalMarker = document.createElement('div');
       intervalMarker.className = 'interval-marker';
 
-      // Calculate the time for this interval
+      //To Calculate the time for this interval
       const timeForInterval = i * interval;
 
-      // Set the left position based on the percentage of the duration
       const leftPosition = (timeForInterval / duration) * 100;
       intervalMarker.style.left = `${leftPosition}%`;
 
-      // Create label for the interval marker
       const label = document.createElement('div');
       label.className = 'interval-label';
       label.textContent = formatTime(timeForInterval);
       label.style.left = `${leftPosition}%`;
 
-      // Append interval marker and label to the scale
       scale.appendChild(intervalMarker);
       scale.appendChild(label);
     }
   }
 
-  // Format time in MM:SS format
   function formatTime(seconds) {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.floor(seconds % 60);

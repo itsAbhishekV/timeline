@@ -3,6 +3,7 @@ body {
   margin: 0;
   height: 100vh;
   width: 100vw;
+  user-select: none;
 }
 
 .video-container {
@@ -14,8 +15,6 @@ body {
   height: 85vh;
 }
 
-video::-webkit-media-controls-timeline {display:none;}
-
 .timeline-container {
   position: relative;
   display: flex;
@@ -23,21 +22,21 @@ video::-webkit-media-controls-timeline {display:none;}
   align-items: center;
   margin-top: 3.5px;
 }
-
 .currentTimeLine {
   position: absolute;
   height: 100%;
   width: 2px;
   background-color: red;
+  cursor: pointer !important;
   top: 0;
   left: 0;
-  cursor: ew-resize; /* Set cursor to ew-resize to indicate horizontal resize */
 }
 
 .scale {
   position: relative;
-  height: 100px; /* Adjust the height as needed */
+  height: 100px;
   width: 100%;
+  cursor: pointer !important;
   background-color: black;
   display: flex;
   align-items: center;
@@ -56,11 +55,10 @@ video::-webkit-media-controls-timeline {display:none;}
   top: 50%;
   left: 0;
   transform: translateY(-50%);
-  cursor: grab;
-  z-index: 0; /* Ensure it's behind the currentTimeLine and interval markers */
+  cursor: pointer;
+  z-index: 0;
 }
 
-/* Update the existing styles for the interval marker */
 .interval-marker {
   position: absolute;
   width: 2px;
@@ -69,7 +67,6 @@ video::-webkit-media-controls-timeline {display:none;}
   top: 37%;
 }
 
-/* Update the existing styles for the interval label */
 .interval-label {
   position: absolute;
   color: rgb(255, 255, 255);
@@ -82,10 +79,23 @@ video::-webkit-media-controls-timeline {display:none;}
 .currentTimeDisplay {
   position: absolute;
   left: 90%;
-  top: 10%; /* Adjust the vertical position as needed */
+  top: 10%;
   transform: translateX(-50%);
-  z-index: 1; /* Ensure it's above the scale and horizontal line */
+  z-index: 1;
   color: white;
   font-weight: 600;
   white-space: nowrap;
+}
+
+.currentTimeLine.dragging {
+  background-color: rgb(255, 166, 0);
+  transition: background-color 0.3s ease;
+}
+
+.currentTimeDisplay {
+  cursor: grab;
+}
+
+.currentTimeDisplay:active {
+  cursor: grabbing;
 }
