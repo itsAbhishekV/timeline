@@ -60,7 +60,7 @@ body {
   color: white;
   font-weight: 600;
   white-space: nowrap;
-  z-index: 5;
+  z-index: 6;
 }
 
 .interval-marker {
