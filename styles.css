@@ -4,6 +4,7 @@ body {
   height: 100vh;
   width: 100vw;
   user-select: none;
+  overflow: hidden;
 }
 
 .video-container {
@@ -17,34 +18,10 @@ body {
 
 .timeline-container {
   position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 3.5px;
-}
-.currentTimeLine {
-  position: absolute;
-  height: 100%;
-  width: 2px;
-  background-color: red;
-  cursor: pointer !important;
-  top: 0;
-  left: 0;
-}
-
-.scale {
-  position: relative;
-  height: 100px;
   width: 100%;
-  cursor: pointer !important;
+  overflow-x: hidden;
   background-color: black;
-  display: flex;
-  align-items: center;
-}
-
-.scaleSegment {
-  height: 100%;
-  border-left: 1px solid white;
+  height: 100px;
 }
 
 .horizontalLine {
@@ -59,43 +36,48 @@ body {
   z-index: 0;
 }
 
+.currentTimeLine {
+  position: absolute;
+  height: 100%;
+  width: 3px;
+  background-color: red;
+  cursor: pointer !important;
+  top: 0;
+  left: 0;
+  z-index: 4; /* Ensure the current timeline is above the horizontal line */
+}
+/* Add this CSS to your existing styles or styles.css file */
+.currentTimeLine,
+.currentTimeDisplay {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.currentTimeDisplay {
+  padding-top: 5px;
+  top: 0; /* Adjusted to position above the currentTimeLine */
+  color: white;
+  font-weight: 600;
+  white-space: nowrap;
+  z-index: 5;
+}
+
 .interval-marker {
   position: absolute;
   width: 2px;
   height: 12px;
-  background-color: rgb(255, 255, 255);
-  top: 37%;
+  background-color: white;
+  left: 0;
+  top: 38%;
+  z-index: 2;
 }
 
 .interval-label {
   position: absolute;
-  color: rgb(255, 255, 255);
+  color: white;
   font-size: 14px;
   top: 60%;
   transform: translateX(-50%);
   white-space: nowrap;
-}
-
-.currentTimeDisplay {
-  position: absolute;
-  left: 90%;
-  top: 10%;
-  transform: translateX(-50%);
-  z-index: 1;
-  color: white;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.currentTimeLine.dragging {
-  background-color: rgb(255, 166, 0);
-  transition: background-color 0.3s ease;
-}
-
-.currentTimeDisplay {
-  cursor: grab;
-}
-
-.currentTimeDisplay:active {
-  cursor: grabbing;
 }

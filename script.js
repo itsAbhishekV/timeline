@@ -1,105 +1,86 @@
 document.addEventListener('DOMContentLoaded', function () {
   const video = document.getElementById('video');
   const currentTimeLine = document.getElementById('currentTimeLine');
-  const scale = document.getElementById('scale');
   const timelineContainer = document.getElementById('timelineContainer');
-  const currentTimeDisplay = document.createElement('div');
-  currentTimeDisplay.className = 'currentTimeDisplay';
-  timelineContainer.appendChild(currentTimeDisplay);
+  const currentTimeDisplay = document.getElementById('currentTimeDisplay');
 
-  let isDragging = false;
+  let scaleFactor = 1;
 
-  // Event listener for updating the timeline while the video is playing
   video.addEventListener('timeupdate', updateTimeline);
+  video.addEventListener('loadedmetadata', initializeTimeline);
 
   function updateTimeline() {
     const duration = video.duration;
     const currentTime = video.currentTime;
-    const percentage = (currentTime / duration) * 100;
+    const percentage = (currentTime / duration) * 100 * scaleFactor;
 
-    // Update the current time display
     currentTimeDisplay.textContent = formatTime(currentTime);
-    currentTimeDisplay.style.left = `${percentage}%`;
-    
-    if (!isDragging) {
-      currentTimeLine.style.left = `${percentage}%`;
-    }
-  }
-
-  currentTimeDisplay.addEventListener('mousedown', startDragging);
-
-  document.addEventListener('mouseup', stopDragging);
-
-  document.addEventListener('mousemove', handleDragging);
-
-  // Function to handle the start of dragging
-  function startDragging(event) {
-    isDragging = true;
-    video.pause();
-    event.preventDefault();
-  }
-
-  // Function to handle dragging
-  function handleDragging(event) {
-    if (!isDragging) return;
 
     const timelineRect = timelineContainer.getBoundingClientRect();
-    const clickX = event.clientX - timelineRect.left;
-    const percentage = (clickX / timelineRect.width) * 100;
+    const timelineMiddle = timelineRect.width / 2;
+    const timelinePosition = timelineMiddle - (timelineRect.width * video.currentTime) / duration;
 
-    const clampedPercentage = Math.max(0, Math.min(100, percentage));
+    currentTimeLine.style.left = `${timelineMiddle}px`;
+    currentTimeDisplay.style.left = `${timelineMiddle}px`;
 
-    // Update the current timeline position
-    currentTimeLine.style.left = `${clampedPercentage}%`;
-
-    // Update the video time based on the dragged position
-    const duration = video.duration;
-    const newTime = (clampedPercentage / 100) * duration;
-    video.currentTime = newTime;
-
-    // Update the current time display
-    currentTimeDisplay.textContent = formatTime(newTime);
-    currentTimeDisplay.style.left = `${clampedPercentage}%`;
+    updateScaleDynamically();
   }
 
-  function stopDragging() {
-    if (isDragging) {
-      isDragging = false;
-      video.play();
+  function updateScaleDynamically() {
+    const duration = video.duration;
+    const interval = 30;
+
+    const totalLabels = Math.ceil(duration / interval);
+
+    // Clear previous markers and labels
+    const existingMarkers = document.querySelectorAll('.interval-marker, .interval-label');
+    existingMarkers.forEach(marker => marker.remove());
+
+    // Add interval markers and labels
+    for (let i = 0; i <= totalLabels; i++) {
+      const timeForLabel = i * interval;
+      const leftPosition = ((timeForLabel - video.currentTime) / duration) * 100 * scaleFactor + 50;
+
+      const intervalMarker = document.createElement('div');
+      intervalMarker.className = 'interval-marker';
+      intervalMarker.style.left = `${leftPosition}%`;
+
+      const intervalLabel = document.createElement('div');
+      intervalLabel.className = 'interval-label';
+      intervalLabel.textContent = formatTime(timeForLabel);
+      intervalLabel.style.left = `${leftPosition}%`;
+
+      timelineContainer.appendChild(intervalMarker);
+      timelineContainer.appendChild(intervalLabel);
     }
   }
-
-  initializeTimeline();
-
-  // Event listener for updating the timeline when video metadata is loaded
-  video.addEventListener('loadedmetadata', function () {
-    initializeTimeline();
-  });
 
   function initializeTimeline() {
     const duration = video.duration;
     const interval = 30;
-    const numIntervals = Math.floor(duration / interval);
 
-    scale.innerHTML = '';
+    const totalLabels = Math.ceil(duration / interval);
 
-    for (let i = 0; i <= numIntervals; i++) {
+    // Clear previous markers and labels
+    const existingMarkers = document.querySelectorAll('.interval-marker, .interval-label');
+    existingMarkers.forEach(marker => marker.remove());
+
+    // Add interval markers and labels
+    for (let i = 0; i <= totalLabels; i++) {
+      const timeForLabel = i * interval;
+      const leftPosition = ((timeForLabel - video.currentTime) / duration) * 100 * scaleFactor + 50;
+
       const intervalMarker = document.createElement('div');
       intervalMarker.className = 'interval-marker';
-
-      //To Calculate the time for this interval
-      const timeForInterval = i * interval;
-
-      const leftPosition = (timeForInterval / duration) * 100;
       intervalMarker.style.left = `${leftPosition}%`;
 
-      const label = document.createElement('div');
-      label.className = 'interval-label';
-      label.textContent = formatTime(timeForInterval);
-      label.style.left = `${leftPosition}%`;
+      const intervalLabel = document.createElement('div');
+      intervalLabel.className = 'interval-label';
+      intervalLabel.textContent = formatTime(timeForLabel);
+      intervalLabel.style.left = `${leftPosition}%`;
 
-      scale.appendChild(intervalMarker);
-      scale.appendChild(label);
+      timelineContainer.appendChild(intervalMarker);
+      timelineContainer.appendChild(intervalLabel);
     }
   }
 
