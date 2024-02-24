@@ -44,9 +44,9 @@ body {
   cursor: pointer !important;
   top: 0;
   left: 0;
-  z-index: 4; /* Ensure the current timeline is above the horizontal line */
+  z-index: 4; 
 }
-/* Add this CSS to your existing styles or styles.css file */
+
 .currentTimeLine,
 .currentTimeDisplay {
   position: absolute;
@@ -56,7 +56,7 @@ body {
 
 .currentTimeDisplay {
   padding-top: 5px;
-  top: 0; /* Adjusted to position above the currentTimeLine */
+  top: 0;
   color: white;
   font-weight: 600;
   white-space: nowrap;

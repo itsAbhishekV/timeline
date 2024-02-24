@@ -61,7 +61,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const totalLabels = Math.ceil(duration / interval);
 
-    // Clear previous markers and labels
     const existingMarkers = document.querySelectorAll('.interval-marker, .interval-label');
     existingMarkers.forEach(marker => marker.remove());
 
