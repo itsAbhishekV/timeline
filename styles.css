@@ -64,9 +64,9 @@ video::-webkit-media-controls-timeline {display:none;}
 .interval-marker {
   position: absolute;
   width: 2px;
-  height: 10px;
+  height: 12px;
   background-color: rgb(255, 255, 255);
-  top: 40%;
+  top: 37%;
 }
 
 /* Update the existing styles for the interval label */
