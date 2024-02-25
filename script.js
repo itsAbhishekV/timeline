@@ -12,13 +12,12 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateTimeline() {
     const duration = video.duration;
     const currentTime = video.currentTime;
-    const percentage = (currentTime / duration) * 100 * scaleFactor;
 
     currentTimeDisplay.textContent = formatTime(currentTime);
 
     const timelineRect = timelineContainer.getBoundingClientRect();
     const timelineMiddle = timelineRect.width / 2;
-    const timelinePosition = timelineMiddle - (timelineRect.width * video.currentTime) / duration;
+    const timelinePosition = timelineMiddle - (timelineRect.width * currentTime) / duration;
 
     currentTimeLine.style.left = `${timelineMiddle}px`;
     currentTimeDisplay.style.left = `${timelineMiddle}px`;
@@ -60,9 +59,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const interval = 30;
 
     const totalLabels = Math.ceil(duration / interval);
-
-    const existingMarkers = document.querySelectorAll('.interval-marker, .interval-label');
-    existingMarkers.forEach(marker => marker.remove());
 
     // Add interval markers and labels
     for (let i = 0; i <= totalLabels; i++) {

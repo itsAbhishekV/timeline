@@ -16,6 +16,8 @@ body {
   height: 85vh;
 }
 
+#video::-webkit-media-controls-timeline{ display: none;}
+
 .timeline-container {
   position: relative;
   width: 100%;
